@@ -272,18 +272,18 @@ export default function PBLCase() {
     if (questionState.isWaiting) {
       if (questionState.type === 'curative') {
         return (
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex flex-wrap gap-2 mt-4 justify-center">
             <Button 
               variant="light-peach"
               onClick={() => handleAnswer(1, 'curative resection')}
-              className="font-medium"
+              className="font-medium px-6 whitespace-nowrap"
             >
               1. curative resection
             </Button>
             <Button 
               variant="light-peach"
               onClick={() => handleAnswer(2, 'non-curative resection')}
-              className="font-medium"
+              className="font-medium px-6 whitespace-nowrap"
             >
               2. non-curative resection
             </Button>
@@ -291,31 +291,35 @@ export default function PBLCase() {
         )
       } else if (questionState.type === 'surgery') {
         return (
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Button 
-              variant="light-peach"
-              onClick={() => handleAnswer(1, '수술을 하지 않았어도 되는 환자인데 운이 없었다.')}
-              className="font-medium max-w-xs text-wrap"
-            >
-              1. 수술을 하지 않았어도 되는 환자인데 운이 없었다.
-            </Button>
-            <Button 
-              variant="light-peach"
-              onClick={() => handleAnswer(2, '아니다 수술을 해야 한다.')}
-              className="font-medium"
-            >
-              2. 아니다 수술을 해야 한다.
-            </Button>
+          <div className="flex flex-col gap-2 mt-4 items-center">
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button 
+                variant="light-peach"
+                onClick={() => handleAnswer(1, '수술을 하지 않았어도 되는 환자인데 운이 없었다.')}
+                className="font-medium px-4 whitespace-nowrap max-w-sm"
+              >
+                1. 수술을 하지 않았어도 되는 환자인데 운이 없었다.
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button 
+                variant="light-peach"
+                onClick={() => handleAnswer(2, '아니다 수술을 해야 한다.')}
+                className="font-medium px-6 whitespace-nowrap"
+              >
+                2. 아니다 수술을 해야 한다.
+              </Button>
+            </div>
           </div>
         )
       }
     } else if (currentStep === 0) {
       return (
-        <div className="flex justify-start mt-4">
+        <div className="flex justify-center mt-4">
           <Button 
             variant="light-orange"
             onClick={() => proceedToStep(1)}
-            className="font-medium"
+            className="font-medium px-8 whitespace-nowrap"
           >
             예
           </Button>
@@ -323,11 +327,11 @@ export default function PBLCase() {
       )
     } else if (currentStep === 1) {
       return (
-        <div className="flex justify-start mt-4">
+        <div className="flex justify-center mt-4">
           <Button 
             variant="light-orange"
             onClick={() => proceedToStep(2)}
-            className="font-medium"
+            className="font-medium px-8 whitespace-nowrap"
           >
             예
           </Button>
@@ -335,11 +339,11 @@ export default function PBLCase() {
       )
     } else if (currentStep === 2) {
       return (
-        <div className="flex justify-start mt-4">
+        <div className="flex justify-center mt-4">
           <Button 
             variant="light-orange"
             onClick={() => proceedToStep(3)}
-            className="font-medium"
+            className="font-medium px-8 whitespace-nowrap"
           >
             예
           </Button>
