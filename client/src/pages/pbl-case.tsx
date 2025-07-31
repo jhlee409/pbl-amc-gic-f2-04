@@ -291,25 +291,21 @@ export default function PBLCase() {
         )
       } else if (questionState.type === 'surgery') {
         return (
-          <div className="flex flex-col gap-2 mt-4 items-center">
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Button 
-                variant="light-peach"
-                onClick={() => handleAnswer(1, '수술을 하지 않았어도 되는 환자인데 운이 없었다.')}
-                className="font-medium px-4 whitespace-nowrap max-w-sm"
-              >
-                1. 수술을 하지 않았어도 되는 환자인데 운이 없었다.
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Button 
-                variant="light-peach"
-                onClick={() => handleAnswer(2, '아니다 수술을 해야 한다.')}
-                className="font-medium px-6 whitespace-nowrap"
-              >
-                2. 아니다 수술을 해야 한다.
-              </Button>
-            </div>
+          <div className="flex flex-wrap gap-2 mt-4 justify-center">
+            <Button 
+              variant="light-peach"
+              onClick={() => handleAnswer(1, '수술을 하지 않았어도 되는 환자인데 운이 없었다.')}
+              className="font-medium px-4 whitespace-nowrap"
+            >
+              1. 수술을 하지 않았어도 되는 환자인데 운이 없었다.
+            </Button>
+            <Button 
+              variant="light-peach"
+              onClick={() => handleAnswer(2, '아니다 수술을 해야 한다.')}
+              className="font-medium px-6 whitespace-nowrap"
+            >
+              2. 아니다 수술을 해야 한다.
+            </Button>
           </div>
         )
       }
