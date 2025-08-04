@@ -1,0 +1,333 @@
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC GI 상부 F2용 PBL 04</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'light-blue-bg': '#E3F2FD',
+                        'light-peach': '#FFCCBC',
+                        'dark-peach': '#FF8A65',
+                        'light-orange': '#FFE0B2',
+                        'material-blue': '#1976D2'
+                    },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-roboto">
+    <!-- Header -->
+    <div class="bg-material-blue text-white p-4 shadow-md">
+        <h1 class="text-lg font-medium text-center">
+            AMC GI 상부 F2용 PBL 04<br>
+            <span class="text-sm font-normal">non curative ESD 후 수술하고 나온 병리 결과</span>
+        </h1>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-4xl mx-auto p-4 pb-20">
+        <!-- Conversation Area -->
+        <div id="conversationArea" class="space-y-4">
+            <!-- Initial Loading Message -->
+            <div class="conversation-item">
+                <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                    <div class="flex items-start space-x-3">
+                        <div class="material-icons text-material-blue mt-1">medical_services</div>
+                        <div>
+                            <p class="text-gray-800 leading-relaxed">로딩이 완료 되었습니다. 환자에 대해 말씀 드릴까요?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Yes Button -->
+                <div class="mt-4 flex justify-start">
+                    <button onclick="proceedToStep(1)" class="bg-light-orange hover:bg-orange-300 px-6 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                        예
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Padding -->
+    <div class="h-20"></div>
+
+    <script>
+        let currentStep = 0;
+        let conversationHistory = [];
+        let waitingForAnswer = false;
+        let currentQuestionType = null;
+
+        function addConversationItem(content, isUser = false) {
+            const conversationArea = document.getElementById('conversationArea');
+            const item = document.createElement('div');
+            item.className = 'conversation-item fade-in';
+            
+            if (isUser) {
+                item.innerHTML = `
+                    <div class="bg-gray-200 p-3 rounded-lg shadow-sm ml-8 border-l-4 border-gray-400">
+                        <div class="flex items-start space-x-3">
+                            <div class="material-icons text-gray-600 mt-1">person</div>
+                            <div>
+                                <p class="text-gray-800">${content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                item.innerHTML = content;
+            }
+            
+            conversationArea.appendChild(item);
+            autoScroll();
+        }
+
+        function addImageContainer(imageName, description) {
+            const imageHtml = `
+                <div class="my-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border">
+                        <p class="text-sm text-gray-600 mb-2">${description}</p>
+                        <!-- Supabase Image: ${imageName} -->
+                        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                            <div class="material-icons text-gray-400 text-4xl mb-2">image</div>
+                            <p class="text-gray-500">이미지 로딩 중: ${imageName}</p>
+                            <p class="text-xs text-gray-400 mt-1">Supabase Storage: pbl04/${imageName}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            addConversationItem(imageHtml);
+        }
+
+        function autoScroll() {
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+
+        function proceedToStep(step) {
+            const steps = {
+                1: () => {
+                    addConversationItem(`
+                        <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                            <div class="flex items-start space-x-3">
+                                <div class="material-icons text-material-blue mt-1">medical_services</div>
+                                <div>
+                                    <p class="text-gray-800 leading-relaxed mb-2">환자에 대해 설명드리겠습니다.</p>
+                                    <ol class="list-decimal list-inside space-y-2 text-gray-800">
+                                        <li>환자는 고혈압 약제를 복용하면서 큰 문제 없이 지내오던 75세의 남자입니다.</li>
+                                        <li>얼마 전 검진 내시경에서 발견된 2-3 cm MB GC adenocarcinoma로 본원을 내원하였습니다.</li>
+                                    </ol>
+                                    <p class="text-gray-800 mt-3">선생님은 외래에서 EGD와 복부 CT를 의뢰하였습니다. 복부 CT는 정상 소견이었습니다. 그럼 EGD image를 보시겠습니까?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-start">
+                            <button onclick="proceedToStep(2)" class="bg-light-orange hover:bg-orange-300 px-6 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                                예
+                            </button>
+                        </div>
+                    `);
+                },
+                2: () => {
+                    addImageContainer('EGD.png', 'EGD 검사 결과 이미지');
+                    setTimeout(() => {
+                        addConversationItem(`
+                            <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                                <div class="flex items-start space-x-3">
+                                    <div class="material-icons text-material-blue mt-1">medical_services</div>
+                                    <div>
+                                        <p class="text-gray-800 leading-relaxed">내시경 조직생검의 결과는 adenocarcinoma M/D 였습니다.</p>
+                                        <p class="text-gray-800 mt-3">우선 환자에게 내시경으로 절제된 결과에 따라서는 수술적 절제를 추가로 할 수 있다는 설명을 했고, 환자는 내시경적 절제를 원하여서, ESD를 시행하였습니다. ESD image와 ESD pathology report image를 보시겠습니까?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-start">
+                                <button onclick="proceedToStep(3)" class="bg-light-orange hover:bg-orange-300 px-6 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                                    예
+                                </button>
+                            </div>
+                        `);
+                    }, 500);
+                },
+                3: () => {
+                    addImageContainer('ESD.png', 'ESD 시술 이미지');
+                    addImageContainer('ESD pathology report.png', 'ESD 병리검사 보고서');
+                    setTimeout(() => {
+                        currentQuestionType = 'curative';
+                        waitingForAnswer = true;
+                        addConversationItem(`
+                            <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                                <div class="flex items-start space-x-3">
+                                    <div class="material-icons text-material-blue mt-1">medical_services</div>
+                                    <div>
+                                        <p class="text-gray-800 leading-relaxed mb-3">이 병리 결과로 보면 curative resection일까요? non-curative resection일까요?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <button onclick="answerQuestion(1, 'curative resection')" class="answer-btn bg-light-peach hover:bg-dark-peach px-6 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                                    1. curative resection
+                                </button>
+                                <button onclick="answerQuestion(2, 'non-curative resection')" class="answer-btn bg-light-peach hover:bg-dark-peach px-6 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                                    2. non-curative resection
+                                </button>
+                            </div>
+                        `);
+                    }, 1000);
+                },
+                4: () => {
+                    addConversationItem(`
+                        <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                            <div class="flex items-start space-x-3">
+                                <div class="material-icons text-material-blue mt-1">medical_services</div>
+                                <div>
+                                    <p class="text-gray-800 leading-relaxed mb-3">예, 맞습니다. PD 인 경우엔 curative resection의 Expanded indication은 En bloc resection, LVI -, HRM-, VRM -, 점막 국한, ulcer -, and 2 cm 이하입니다. 그러나 이 경우는 PD 2.5 cm, sm 1500 um invasion이므로 non curative resection입니다.</p>
+                                    <p class="text-gray-800 mb-3">이런 경우 재발율에 대해서는 확실하게 정해진 수치는 없지만 20 - 30% 정도 재발율을 보인다고 얘기하는 것이 무난합니다. 즉 수술을 추가로 해야 안전합니다. 환자에게 잘 설명해서 추가 수술을 시행하였습니다.</p>
+                                    <p class="text-gray-800 mb-3">그런데 수술 후 병리 검사의 결과 no residual cancer, no LN metastasis 였습니다. 환자는 어디서 조언을 구했는지, 안해도 되는 수술을 했다며 선생님에게 해명을 요구합니다.</p>
+                                    <p class="text-gray-800">이 환자는 그럼 수술을 하지 않았어도 되나요?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button onclick="answerQuestion(1, '수술을 하지 않았어도 되는 환자인데 운이 없었다.')" class="answer-btn bg-light-peach hover:bg-dark-peach px-4 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200 max-w-xs">
+                                1. 수술을 하지 않았어도 되는 환자인데 운이 없었다.
+                            </button>
+                            <button onclick="answerQuestion(2, '아니다 수술을 해야 한다.')" class="answer-btn bg-light-peach hover:bg-dark-peach px-4 py-2 rounded-lg font-medium text-gray-800 shadow-sm transition-colors duration-200">
+                                2. 아니다 수술을 해야 한다.
+                            </button>
+                        </div>
+                    `);
+                    currentQuestionType = 'surgery';
+                    waitingForAnswer = true;
+                },
+                5: () => {
+                    addConversationItem(`
+                        <div class="bg-light-blue-bg p-4 rounded-lg shadow-sm border-l-4 border-material-blue">
+                            <div class="flex items-start space-x-3">
+                                <div class="material-icons text-material-blue mt-1">medical_services</div>
+                                <div>
+                                    <p class="text-gray-800 leading-relaxed mb-3"><strong>예, 맞습니다.</strong></p>
+                                    <ol class="list-decimal list-inside space-y-2 text-gray-800">
+                                        <li>놀랍게도, 일부 외과 선생님과 심지어는 소화기 내시경 전문가도 그렇게 얘기하는 경우가 있습니다. 이는 전적으로 틀린 말입니다.</li>
+                                        <li>우리가 complete resection을 했음에도, 재발 위험이 20% 있다고 할 때는 현재 수술 후 병리검사에서 발견 가능한 크기의 LN 전이가 20%라는 의미가 아닙니다.</li>
+                                        <li>수술 당시에는 병리 검사에서는 찾아낼 수 없는 micrometastasis가 20% 의 확률로 존재해서 1-3년 사이에 CT에서 발견할 수 있을 만큼 커진다는 의미입니다.</li>
+                                        <li>이는 병리 검사에서 Sentinel LN가 아닌 일반 node는 가장 직경이 큰 면으로 one plane만 절재해서 검사하는 방식을 생각해 보면 당연한 얘기입니다. 즉 병리 검사 당시 LN meta가 없다고 cancer cell이 없다고 하는 것은 아주 위험한 생각입니다.</li>
+                                        <li>따라서 환자에게 이를 잘 설명해 주어야 합니다. '현재 관찰할 수 있을 만큼 큰 전이가 없어도 20%의 확률로 작은 암세포가 숨어 있기 때문에, 수술은 꼭 필요한 치료 였습니다.'라고요.</li>
+                                        <li>참고로 병리에서 PD를 진단하는 기준은 분화도가 좋은 portion이 검사 전체에서 50% 안되는 경우에 PD를 줍니다. 병리 report에는 PD %로 기록하는데, 이건 소화기 의사의 요구로 그렇게 쓰는 것이고, 병리 의사는 PD 55%와 75% 사이에 양젠인 차이를 의미있다고 봐서 그렇게 적는 것이 아닙니다. 오해 없기를 바랍니다.</li>
+                                    </ol>
+                                    <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                                        <p class="text-gray-800 font-medium">과제</p>
+                                        <p class="text-gray-800 mt-2">EGC ESD에서 curative resection의 absolute indication과 expanded indication을 정리하여, PBL_amc_F2_04_이름.docx 파일을 교수님에게 제출하시기 바랍니다.</p>
+                                    </div>
+                                    <p class="text-gray-800 mt-4 font-medium text-center">수고하셨습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+            };
+
+            if (steps[step]) {
+                steps[step]();
+                currentStep = step;
+            }
+        }
+
+        function answerQuestion(choice, answerText) {
+            if (!waitingForAnswer) return;
+
+            // Add user's answer to conversation
+            addConversationItem(answerText, true);
+
+            // Disable all answer buttons
+            const answerBtns = document.querySelectorAll('.answer-btn');
+            answerBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+
+            setTimeout(() => {
+                if (currentQuestionType === 'curative') {
+                    if (choice === 2) {
+                        waitingForAnswer = false;
+                        proceedToStep(4);
+                    } else {
+                        showWrongAnswerFeedback();
+                    }
+                } else if (currentQuestionType === 'surgery') {
+                    if (choice === 2) {
+                        waitingForAnswer = false;
+                        proceedToStep(5);
+                    } else {
+                        showWrongAnswerFeedback();
+                    }
+                }
+            }, 500);
+        }
+
+        function showWrongAnswerFeedback() {
+            addConversationItem(`
+                <div class="bg-red-50 p-4 rounded-lg shadow-sm border-l-4 border-red-400">
+                    <div class="flex items-start space-x-3">
+                        <div class="material-icons text-red-500 mt-1">error</div>
+                        <div>
+                            <p class="text-red-800">기대한 대답이 아닙니다. 다시 생각해보고 대답해 주세요.</p>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            // Re-enable answer buttons
+            setTimeout(() => {
+                const answerBtns = document.querySelectorAll('.answer-btn');
+                answerBtns.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                });
+            }, 1000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .answer-btn:active {
+                background-color: #FF8A65 !important;
+                transform: translateY(1px);
+            }
+            
+            .conversation-item {
+                margin-bottom: 16px;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-scroll on page load
+        window.onload = function() {
+            autoScroll();
+        };
+    </script>
+</body>
+</html>

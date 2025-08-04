@@ -14,7 +14,7 @@ interface ConversationItem {
 
 interface QuestionState {
   isWaiting: boolean
-  type: 'curative' | 'surgery' | null
+  type: 'curative' | 'surgery' | 'initial' | null
   correctAnswer: number
 }
 
@@ -22,9 +22,9 @@ export default function PBLCase() {
   const [conversationItems, setConversationItems] = useState<ConversationItem[]>([])
   const [currentStep, setCurrentStep] = useState(0)
   const [questionState, setQuestionState] = useState<QuestionState>({
-    isWaiting: false,
-    type: null,
-    correctAnswer: 0
+    isWaiting: true,
+    type: 'initial',
+    correctAnswer: 1
   })
 
   const addConversationItem = (item: Omit<ConversationItem, 'id'>) => {
@@ -35,11 +35,17 @@ export default function PBLCase() {
   }
 
   const addImage = (fileName: string, description: string) => {
+    console.log('=== Adding Image ===')
+    console.log('File name:', fileName)
+    console.log('Description:', description)
+    
     const imageUrl = getImageUrl('pbl04', fileName)
+    console.log('Generated image URL:', imageUrl)
+    
     addConversationItem({
       type: 'image',
       content: fileName,
-      imageUrl,
+      imageUrl: imageUrl || undefined,
       imageDescription: description
     })
   }
@@ -55,6 +61,18 @@ export default function PBLCase() {
 
   const proceedToStep = (step: number) => {
     switch (step) {
+      case 0:
+        addConversationItem({
+          type: 'assistant',
+          content: '로딩이 완료 되었습니다. 환자에 대해 말씀 드릴까요?'
+        })
+        setQuestionState({
+          isWaiting: true,
+          type: 'initial',
+          correctAnswer: 1
+        })
+        break
+
       case 1:
         addConversationItem({
           type: 'assistant',
@@ -64,6 +82,11 @@ export default function PBLCase() {
 2. 얼마 전 검진 내시경에서 발견된 2-3 cm MB GC adenocarcinoma로 본원을 내원하였습니다.
 
 선생님은 외래에서 EGD와 복부 CT를 의뢰하였습니다. 복부 CT는 정상 소견이었습니다. 그럼 EGD image를 보시겠습니까?`
+        })
+        setQuestionState({
+          isWaiting: true,
+          type: 'initial',
+          correctAnswer: 1
         })
         break
 
@@ -75,6 +98,11 @@ export default function PBLCase() {
             content: `내시경 조직생검의 결과는 adenocarcinoma M/D 였습니다.
 
 우선 환자에게 내시경으로 절제된 결과에 따라서는 수술적 절제를 추가로 할 수 있다는 설명을 했고, 환자는 내시경적 절제를 원하여서, ESD를 시행하였습니다. ESD image와 ESD pathology report image를 보시겠습니까?`
+          })
+          setQuestionState({
+            isWaiting: true,
+            type: 'initial',
+            correctAnswer: 1
           })
         }, 500)
         break
@@ -163,10 +191,7 @@ export default function PBLCase() {
 
   useEffect(() => {
     // Initialize with first message
-    addConversationItem({
-      type: 'assistant',
-      content: '로딩이 완료 되었습니다. 환자에 대해 말씀 드릴까요?'
-    })
+    proceedToStep(0)
   }, [])
 
   useEffect(() => {
@@ -179,8 +204,8 @@ export default function PBLCase() {
     switch (item.type) {
       case 'assistant':
         return (
-          <div key={item.id} className={baseClasses}>
-            <Card className="light-blue-bg border-l-4 border-blue-600">
+          <div key={item.id} className={`${baseClasses} flex justify-start`}>
+            <Card className="light-blue-bg border-l-4 border-blue-600 w-full">
               <CardContent className="p-4">
                 <div className="flex items-start space-x-3">
                   <Stethoscope className="text-blue-600 mt-1 flex-shrink-0 h-5 w-5" />
@@ -195,12 +220,12 @@ export default function PBLCase() {
 
       case 'user':
         return (
-          <div key={item.id} className={`${baseClasses} ml-8`}>
-            <Card className="bg-gray-200 border-l-4 border-gray-400">
+          <div key={item.id} className={`${baseClasses} flex justify-end`}>
+            <Card className="bg-blue-100 border-l-4 border-blue-400 max-w-md">
               <CardContent className="p-3">
                 <div className="flex items-start space-x-3">
-                  <User className="text-gray-600 mt-1 flex-shrink-0 h-5 w-5" />
-                  <div className="text-gray-800">
+                  <User className="text-blue-600 mt-1 flex-shrink-0 h-5 w-5" />
+                  <div className="text-blue-800">
                     {item.content}
                   </div>
                 </div>
@@ -211,35 +236,44 @@ export default function PBLCase() {
 
       case 'image':
         return (
-          <div key={item.id} className={baseClasses}>
-            <Card className="bg-white border">
+          <div key={item.id} className={`${baseClasses} flex justify-start`}>
+            <Card className="bg-white border w-full">
               <CardContent className="p-4">
                 <p className="text-sm text-gray-600 mb-2">{item.imageDescription}</p>
                 {item.imageUrl ? (
-                  <img 
-                    src={item.imageUrl} 
-                    alt={item.content}
-                    className="max-w-full h-auto rounded border"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.style.display = 'none'
-                      const parent = target.parentElement
-                      if (parent) {
-                        parent.innerHTML = `
-                          <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                            <div class="text-gray-400 text-4xl mb-2">🖼️</div>
-                            <p class="text-gray-500">이미지 로딩 중: ${item.content}</p>
-                            <p class="text-xs text-gray-400 mt-1">Supabase Storage: pbl04/${item.content}</p>
-                          </div>
-                        `
-                      }
-                    }}
-                  />
+                  <div>
+                    <p className="text-xs text-gray-400 mb-2">URL: {item.imageUrl}</p>
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.content}
+                      className="max-w-full h-auto rounded border"
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', item.content)
+                      }}
+                      onError={(e) => {
+                        console.error('Image load error:', item.content, e)
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const parent = target.parentElement
+                        if (parent) {
+                          parent.innerHTML = `
+                            <div class="bg-red-50 border-2 border-dashed border-red-300 rounded-lg p-8 text-center">
+                              <div class="text-red-400 text-4xl mb-2">❌</div>
+                              <p class="text-red-600 font-medium">이미지 로딩 실패: ${item.content}</p>
+                              <p class="text-xs text-red-400 mt-1">URL: ${item.imageUrl}</p>
+                              <p class="text-xs text-red-400">Supabase Storage: pbl04/${item.content}</p>
+                            </div>
+                          `
+                        }
+                      }}
+                    />
+                  </div>
                 ) : (
-                  <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <ImageIcon className="text-gray-400 h-12 w-12 mx-auto mb-2" />
-                    <p className="text-gray-500">이미지 로딩 중: {item.content}</p>
-                    <p className="text-xs text-gray-400 mt-1">Supabase Storage: pbl04/{item.content}</p>
+                  <div className="bg-yellow-50 border-2 border-dashed border-yellow-300 rounded-lg p-8 text-center">
+                    <ImageIcon className="text-yellow-400 h-12 w-12 mx-auto mb-2" />
+                    <p className="text-yellow-600 font-medium">이미지 URL 생성 실패: {item.content}</p>
+                    <p className="text-xs text-yellow-500 mt-1">Supabase Storage: pbl04/{item.content}</p>
+                    <p className="text-xs text-yellow-500">환경변수를 확인해주세요</p>
                   </div>
                 )}
               </CardContent>
@@ -249,8 +283,8 @@ export default function PBLCase() {
 
       case 'error':
         return (
-          <div key={item.id} className={baseClasses}>
-            <Card className="bg-red-50 border-l-4 border-red-400">
+          <div key={item.id} className={`${baseClasses} flex justify-start`}>
+            <Card className="bg-red-50 border-l-4 border-red-400 w-full">
               <CardContent className="p-4">
                 <div className="flex items-start space-x-3">
                   <AlertCircle className="text-red-500 mt-1 flex-shrink-0 h-5 w-5" />
@@ -308,43 +342,19 @@ export default function PBLCase() {
             </Button>
           </div>
         )
+      } else if (questionState.type === 'initial') {
+        return (
+          <div className="flex justify-center mt-4">
+            <Button 
+              variant="light-orange"
+              onClick={() => handleAnswer(1, '예')}
+              className="font-medium px-8 whitespace-nowrap"
+            >
+              예
+            </Button>
+          </div>
+        )
       }
-    } else if (currentStep === 0) {
-      return (
-        <div className="flex justify-center mt-4">
-          <Button 
-            variant="light-orange"
-            onClick={() => proceedToStep(1)}
-            className="font-medium px-8 whitespace-nowrap"
-          >
-            예
-          </Button>
-        </div>
-      )
-    } else if (currentStep === 1) {
-      return (
-        <div className="flex justify-center mt-4">
-          <Button 
-            variant="light-orange"
-            onClick={() => proceedToStep(2)}
-            className="font-medium px-8 whitespace-nowrap"
-          >
-            예
-          </Button>
-        </div>
-      )
-    } else if (currentStep === 2) {
-      return (
-        <div className="flex justify-center mt-4">
-          <Button 
-            variant="light-orange"
-            onClick={() => proceedToStep(3)}
-            className="font-medium px-8 whitespace-nowrap"
-          >
-            예
-          </Button>
-        </div>
-      )
     }
     return null
   }
