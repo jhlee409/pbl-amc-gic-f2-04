@@ -242,7 +242,6 @@ export default function PBLCase() {
                 <p className="text-sm text-gray-600 mb-2">{item.imageDescription}</p>
                 {item.imageUrl ? (
                   <div>
-                    <p className="text-xs text-gray-400 mb-2">URL: {item.imageUrl}</p>
                     <img 
                       src={item.imageUrl} 
                       alt={item.content}
@@ -260,7 +259,6 @@ export default function PBLCase() {
                             <div class="bg-red-50 border-2 border-dashed border-red-300 rounded-lg p-8 text-center">
                               <div class="text-red-400 text-4xl mb-2">❌</div>
                               <p class="text-red-600 font-medium">이미지 로딩 실패: ${item.content}</p>
-                              <p class="text-xs text-red-400 mt-1">URL: ${item.imageUrl}</p>
                               <p class="text-xs text-red-400">Supabase Storage: pbl04/${item.content}</p>
                             </div>
                           `
