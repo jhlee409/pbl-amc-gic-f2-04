@@ -17,6 +17,11 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   server: {
     port: 5173,
@@ -27,7 +32,7 @@ export default defineConfig({
     },
   },
   define: {
-    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify('https://hokwescexyufkisxulqe.supabase.co'),
-    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhva3dlc2NleHl1Zmtpc3h1bHFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3NjIxNjAsImV4cCI6MjA2OTMzODE2MH0.SS9wztt7rOzsGYwDG_ozPKVYctCylvK32RwwmME2t2I'),
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://hokwescexyufkisxulqe.supabase.co'),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhva3dlc2NleHl1Zmtpc3h1bHFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3NjIxNjAsImV4cCI6MjA2OTMzODE2MH0.SS9wztt7rOzsGYwDG_ozPKVYctCylvK32RwwmME2t2I'),
   },
 });

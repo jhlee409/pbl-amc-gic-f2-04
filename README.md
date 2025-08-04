@@ -65,6 +65,46 @@ npm run build
 npm start
 ```
 
+## Vercel 배포
+
+### 1. GitHub에 프로젝트 푸시
+
+```bash
+git add .
+git commit -m "Add Vercel deployment configuration"
+git push origin main
+```
+
+### 2. Vercel에서 프로젝트 연결
+
+1. [Vercel](https://vercel.com)에 로그인
+2. "New Project" 클릭
+3. GitHub 저장소 선택
+4. 프레임워크 프리셋: **Vite** 선택
+5. 빌드 설정:
+   - Build Command: `npm run build`
+   - Output Directory: `dist/public`
+   - Install Command: `npm install`
+
+### 3. 환경 변수 설정
+
+Vercel 대시보드에서 다음 환경 변수를 설정:
+
+- `VITE_SUPABASE_URL`: Supabase 프로젝트 URL
+- `VITE_SUPABASE_ANON_KEY`: Supabase 익명 키
+
+### 4. 배포
+
+"Deploy" 버튼을 클릭하여 배포를 시작합니다.
+
+### 문제 해결
+
+만약 배포 후 코드 페이지만 나오는 경우:
+
+1. Vercel 대시보드에서 빌드 로그 확인
+2. 환경 변수가 올바르게 설정되었는지 확인
+3. `vercel.json` 파일이 프로젝트 루트에 있는지 확인
+
 ## 프로젝트 구조
 
 ```
